@@ -6,6 +6,7 @@ use App\Ai\Agents\CorrectionDetailsAgent;
 use App\Ai\Agents\CorrectionTextAgent;
 use App\Ai\Agents\ExampleAgent;
 use App\Ai\Agents\NaturalRewriteAgent;
+use App\Ai\Agents\TranslateAgent;
 use Illuminate\Support\ServiceProvider;
 use RuntimeException;
 
@@ -35,6 +36,7 @@ final class TestingServiceProvider extends ServiceProvider
         CorrectionDetailsAgent::fake($this->correctionDetails(...));
         NaturalRewriteAgent::fake($this->naturalRewrite(...));
         ExampleAgent::fake($this->example(...));
+        TranslateAgent::fake($this->translate(...));
     }
 
     private function correctionText(string $submission): string
@@ -114,6 +116,16 @@ final class TestingServiceProvider extends ServiceProvider
     private function example(): string
     {
         return 'She goes home every day.';
+    }
+
+    private function translate(string $prompt): string
+    {
+        [$submission, $corrected] = $this->followUpInput($prompt);
+
+        return match ($corrected) {
+            'She goes home.' => 'Ela vai para casa.',
+            default => 'Esta é a tradução em português.',
+        };
     }
 
     /** @return array{string, string} */

@@ -65,7 +65,7 @@ new class extends Component
     #[On('correction-follow-up.{attemptId}')]
     public function startFollowUp(string $kind): void
     {
-        if (! in_array($kind, ['rewrite', 'example'], true) || $this->pending || $this->error !== null || $this->offTopic || blank($this->corrected)) {
+        if (! in_array($kind, ['rewrite', 'example', 'translate'], true) || $this->pending || $this->error !== null || $this->offTopic || blank($this->corrected)) {
             $this->finish($this->error === null && ! $this->offTopic);
 
             return;
@@ -84,9 +84,12 @@ new class extends Component
         }
 
         $followUps = app(GenerateFollowUp::class);
-        $result = $this->followUpKind === 'rewrite'
-            ? $followUps->rewrite($this->submission, $this->corrected)
-            : $followUps->example($this->submission, $this->corrected);
+        $result = match ($this->followUpKind) {
+            'rewrite' => $followUps->rewrite($this->submission, $this->corrected),
+            'example' => $followUps->example($this->submission, $this->corrected),
+            'translate' => $followUps->translate($this->submission, $this->corrected),
+            default => ['label' => '', 'text' => null, 'error' => 'Invalid follow-up requested.'],
+        };
 
         $this->followUpPending = false;
         $this->followUpError = $result['error'];

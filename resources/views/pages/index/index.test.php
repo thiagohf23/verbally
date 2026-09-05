@@ -11,6 +11,13 @@ it('shows the empty session', function (): void {
         ->assertSee('Session · 0 corrections');
 });
 
+it('renders the dark mode toggle and assets', function (): void {
+    Livewire::test('pages::index')
+        ->assertSee('verbally-theme-toggle', false)
+        ->assertSee('aria-label="Toggle dark mode"', false)
+        ->assertSee('verbally-logo-lockup-dark.png', false);
+});
+
 it('creates an attempt descriptor, locks the session, and mounts a keyed child', function (): void {
     Livewire::test('pages::index')
         ->set('text', "  I have went\n to the store.  ")
@@ -51,6 +58,11 @@ it('locks submissions, follow-ups, retries, and clearing until a child reports c
     $component->call('startFollowUp', 0, 'rewrite')
         ->assertSet('processing', true)
         ->assertDispatched('correction-follow-up.0', kind: 'rewrite');
+
+    $component->dispatch('correction-attempt-finished', attemptId: 0, correctionCompleted: true)->assertSet('processing', false);
+    $component->call('startFollowUp', 0, 'translate')
+        ->assertSet('processing', true)
+        ->assertDispatched('correction-follow-up.0', kind: 'translate');
 });
 
 it('routes retries only to a known attempt while holding the global lock', function (): void {

@@ -11,6 +11,7 @@
                 :off-topic="$offTopic"
                 rewrite-label="Rewrite naturally"
                 examples-label="More examples"
+                translate-label="Translate (PT)"
                 :attempt-id="$attemptId"
                 :disabled="$sessionProcessing"
                 :pending="$pending"
@@ -20,6 +21,7 @@
                 :follow-up-error="$followUpError"
                 :retry-action="'$wire.$parent.retryAttempt('.$attemptId.', \''.($errorStage ?? 'stream').'\')'"
                 :follow-up-retry-action="'$wire.$parent.startFollowUp('.$attemptId.', \''.($followUpKind ?? 'rewrite').'\')'"
+                :translate-action="'$wire.$parent.startFollowUp('.$attemptId.', \'translate\')'"
                 :rewrite-action="'$wire.$parent.startFollowUp('.$attemptId.', \'rewrite\')'"
                 :examples-action="'$wire.$parent.startFollowUp('.$attemptId.', \'example\')'"
             />

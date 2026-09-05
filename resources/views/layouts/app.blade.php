@@ -10,11 +10,23 @@
 
         <title>{{ $title ?? config('app.name') }}</title>
 
+        <script>
+            (() => {
+                const storedTheme = localStorage.getItem('verbally_theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            })();
+        </script>
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         @livewireStyles
     </head>
-    <body class="bg-[#f5f8f3] font-sans text-[#17352a] antialiased">
+    <body class="bg-[#f5f8f3] font-sans text-[#17352a] antialiased transition-colors duration-200 dark:bg-[#111a15] dark:text-[#ecf4ee]">
         {{ $slot }}
 
         @livewireScripts

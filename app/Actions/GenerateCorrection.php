@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Ai\Agents\CorrectionDetailsAgent;
 use App\Ai\Agents\CorrectionTextAgent;
 use App\Ai\GeminiRuntime;
+use Illuminate\Support\Facades\Log;
 use Laravel\Ai\Streaming\Events\TextDelta;
 use Throwable;
 
@@ -38,6 +39,8 @@ final class GenerateCorrection
 
             return ['corrected' => $corrected, 'details' => $detailResult['details'], 'error' => $detailResult['error'], 'stage' => $detailResult['error'] === null ? null : 'details'];
         } catch (Throwable $exception) {
+            Log::error('GenerateCorrection::stream exception: '.$exception->getMessage(), ['exception' => (string) $exception]);
+
             return ['corrected' => $corrected, 'details' => null, 'error' => GeminiRuntime::errorMessage($exception), 'stage' => 'stream'];
         }
     }
@@ -51,16 +54,18 @@ final class GenerateCorrection
             return ['details' => null, 'error' => 'Gemini is not configured. Try again later.'];
         }
         try {
-            $response = CorrectionDetailsAgent::make()->prompt(
+            $response = retry(3, fn () => CorrectionDetailsAgent::make()->prompt(
                 "Original text:\n{$submission}\n\nPreviously streamed corrected text:\n{$corrected}",
                 provider: 'gemini', model: $model, timeout: $timeout,
-            );
+            ), 800);
             $details = $response->toArray();
 
             return $this->validDetails($details, $corrected)
                 ? ['details' => $details, 'error' => null]
                 : ['details' => null, 'error' => 'Gemini returned invalid correction details. Try again.'];
         } catch (Throwable $exception) {
+            Log::error('GenerateCorrection::details exception: '.$exception->getMessage(), ['exception' => (string) $exception]);
+
             return ['details' => null, 'error' => GeminiRuntime::errorMessage($exception)];
         }
     }

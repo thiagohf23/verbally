@@ -4,7 +4,9 @@ namespace App\Actions;
 
 use App\Ai\Agents\ExampleAgent;
 use App\Ai\Agents\NaturalRewriteAgent;
+use App\Ai\Agents\TranslateAgent;
 use App\Ai\GeminiRuntime;
+use Illuminate\Support\Facades\Log;
 use Laravel\Ai\Contracts\Agent;
 use Throwable;
 
@@ -30,6 +32,12 @@ final class GenerateFollowUp
     }
 
     /** @return array{label: string, text: string|null, error: string|null} */
+    public function translate(string $submission, string $corrected): array
+    {
+        return $this->generate(TranslateAgent::make(), 'Translation (PT)', $submission, $corrected);
+    }
+
+    /** @return array{label: string, text: string|null, error: string|null} */
     private function generate(Agent $agent, string $label, string $submission, string $corrected): array
     {
         $model = GeminiRuntime::model();
@@ -40,10 +48,10 @@ final class GenerateFollowUp
         }
 
         try {
-            $response = $agent->prompt(
+            $response = retry(3, fn () => $agent->prompt(
                 "Original text:\n{$submission}\n\nCorrected text:\n{$corrected}",
                 provider: 'gemini', model: $model, timeout: $timeout,
-            );
+            ), 800);
 
             $text = trim((string) $response);
 
@@ -57,6 +65,8 @@ final class GenerateFollowUp
 
             return ['label' => $label, 'text' => $text, 'error' => null];
         } catch (Throwable $exception) {
+            Log::error('GenerateFollowUp::generate exception: '.$exception->getMessage(), ['exception' => (string) $exception]);
+
             return ['label' => $label, 'text' => null, 'error' => GeminiRuntime::errorMessage($exception, 'follow-up')];
         }
     }

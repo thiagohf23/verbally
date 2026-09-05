@@ -42,7 +42,7 @@ new class extends Component
 
     public function startFollowUp(int $attemptId, string $kind): void
     {
-        if ($this->processing || ! $this->hasAttempt($attemptId) || ! in_array($kind, ['rewrite', 'example'], true)) {
+        if ($this->processing || ! $this->hasAttempt($attemptId) || ! in_array($kind, ['rewrite', 'example', 'translate'], true)) {
             return;
         }
 

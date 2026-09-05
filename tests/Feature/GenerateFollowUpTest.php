@@ -3,6 +3,7 @@
 use App\Actions\GenerateFollowUp;
 use App\Ai\Agents\ExampleAgent;
 use App\Ai\Agents\NaturalRewriteAgent;
+use App\Ai\Agents\TranslateAgent;
 
 beforeEach(function (): void {
     config(['ai.verbally.gemini_model' => 'test-model']);
@@ -11,6 +12,7 @@ beforeEach(function (): void {
 it('returns exactly one natural rewrite alternative', function () {
     NaturalRewriteAgent::fake(['I went home early because it was raining.']);
     ExampleAgent::fake()->preventStrayPrompts();
+    TranslateAgent::fake()->preventStrayPrompts();
 
     $result = app(GenerateFollowUp::class)->rewrite('I go home early', 'I went home early because it was raining.');
 
@@ -20,16 +22,28 @@ it('returns exactly one natural rewrite alternative', function () {
 it('returns exactly one example', function () {
     ExampleAgent::fake(['She has lived here since 2020.']);
     NaturalRewriteAgent::fake()->preventStrayPrompts();
+    TranslateAgent::fake()->preventStrayPrompts();
 
     $result = app(GenerateFollowUp::class)->example('She live here since 2020', 'She has lived here since 2020.');
 
     expect($result)->toBe(['label' => 'Example', 'text' => 'She has lived here since 2020.', 'error' => null]);
 });
 
+it('returns a Portuguese translation', function () {
+    TranslateAgent::fake(['Ela mora aqui desde 2020.']);
+    NaturalRewriteAgent::fake()->preventStrayPrompts();
+    ExampleAgent::fake()->preventStrayPrompts();
+
+    $result = app(GenerateFollowUp::class)->translate('She live here since 2020', 'She has lived here since 2020.');
+
+    expect($result)->toBe(['label' => 'Translation (PT)', 'text' => 'Ela mora aqui desde 2020.', 'error' => null]);
+});
+
 it('handles missing configuration without calling any agent', function () {
     config(['ai.verbally.gemini_model' => null]);
     NaturalRewriteAgent::fake()->preventStrayPrompts();
     ExampleAgent::fake()->preventStrayPrompts();
+    TranslateAgent::fake()->preventStrayPrompts();
 
     $result = app(GenerateFollowUp::class)->rewrite('Hello', 'Hello.');
 
