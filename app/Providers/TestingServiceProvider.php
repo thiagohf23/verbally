@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Ai\Agents\CorrectionDetailsAgent;
 use App\Ai\Agents\CorrectionTextAgent;
 use App\Ai\Agents\ExampleAgent;
+use App\Ai\Agents\LabCoachAgent;
 use App\Ai\Agents\NaturalRewriteAgent;
 use App\Ai\Agents\TranslateAgent;
 use Illuminate\Support\ServiceProvider;
@@ -37,6 +38,7 @@ final class TestingServiceProvider extends ServiceProvider
         NaturalRewriteAgent::fake($this->naturalRewrite(...));
         ExampleAgent::fake($this->example(...));
         TranslateAgent::fake($this->translate(...));
+        LabCoachAgent::fake($this->labCoach(...));
     }
 
     private function correctionText(string $submission): string
@@ -126,6 +128,11 @@ final class TestingServiceProvider extends ServiceProvider
             'She goes home.' => 'Ela vai para casa.',
             default => 'Esta é a tradução em português.',
         };
+    }
+
+    private function labCoach(string $prompt): string
+    {
+        return "Coaching Result:\nRevised text formatted by the coach.\n\nTip: Consistent verb forms improve clarity.";
     }
 
     /** @return array{string, string} */

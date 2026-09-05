@@ -1,12 +1,18 @@
 <div class="verbally-shell">
     @island(name: 'header', always: true)
         <header class="verbally-nav" aria-label="Primary navigation">
-            <a href="{{ url('/') }}" class="verbally-brand" aria-label="Verbally home">
-                <span class="verbally-logo-wrap">
-                    <img src="{{ asset('images/verbally-logo-lockup.png') }}" class="dark:hidden" alt="Verbally, English corrections and coaching" width="207" height="178">
-                    <img src="{{ asset('images/verbally-logo-lockup-dark.png') }}" class="hidden dark:block" alt="Verbally, English corrections and coaching" width="207" height="178">
-                </span>
-            </a>
+            <div class="flex items-center gap-3 sm:gap-6">
+                <a href="{{ url('/') }}" class="verbally-brand" aria-label="Verbally home">
+                    <span class="verbally-logo-wrap">
+                        <img src="{{ asset('images/verbally-logo-lockup.png') }}" class="dark:hidden" alt="Verbally, English corrections and coaching" width="207" height="178">
+                        <img src="{{ asset('images/verbally-logo-lockup-dark.png') }}" class="hidden dark:block" alt="Verbally, English corrections and coaching" width="207" height="178">
+                    </span>
+                </a>
+                <nav class="flex items-center gap-1" aria-label="Sections">
+                    <a href="{{ url('/') }}" class="rounded-lg bg-[#2f7a55] px-2.5 py-1 text-xs font-semibold text-white transition-colors dark:bg-[#235c40]" aria-current="page">Practice</a>
+                    <a href="{{ url('/lab') }}" class="rounded-lg px-2.5 py-1 text-xs font-medium text-[#5c6357] transition-colors hover:bg-[#edf6ef] dark:text-[#a3b8aa] dark:hover:bg-[#1b2b21]">Coaching Lab</a>
+                </nav>
+            </div>
             <div class="verbally-nav-meta">
                 <span class="verbally-session">Session · {{ $this->completedCorrections() }} corrections</span>
                 <button
