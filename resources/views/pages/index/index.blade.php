@@ -11,6 +11,7 @@
                 <nav class="flex items-center gap-1" aria-label="Sections">
                     <a href="{{ url('/') }}" class="rounded-lg bg-[#2f7a55] px-2.5 py-1 text-xs font-semibold text-white transition-colors dark:bg-[#235c40]" aria-current="page">Practice</a>
                     <a href="{{ url('/lab') }}" class="rounded-lg px-2.5 py-1 text-xs font-medium text-[#5c6357] transition-colors hover:bg-[#edf6ef] dark:text-[#a3b8aa] dark:hover:bg-[#1b2b21]">Coaching Lab</a>
+                    <a href="{{ url('/review') }}" class="rounded-lg px-2.5 py-1 text-xs font-medium text-[#5c6357] transition-colors hover:bg-[#edf6ef] dark:text-[#a3b8aa] dark:hover:bg-[#1b2b21]">Flashcards</a>
                 </nav>
             </div>
             <div class="verbally-nav-meta">

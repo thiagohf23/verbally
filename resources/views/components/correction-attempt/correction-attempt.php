@@ -2,6 +2,8 @@
 
 use App\Actions\GenerateCorrection;
 use App\Actions\GenerateFollowUp;
+use App\Models\Deck;
+use App\Models\Flashcard;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
@@ -39,6 +41,45 @@ new class extends Component
     public ?string $followUpKind = null;
 
     public ?string $followUpError = null;
+
+    public bool $savedToFlashcards = false;
+
+    public function saveToDeck(): void
+    {
+        if ($this->savedToFlashcards || blank($this->corrected)) {
+            return;
+        }
+
+        $deck = Deck::firstOrCreate(
+            ['slug' => 'my-corrections'],
+            [
+                'name' => 'My Corrections',
+                'description' => 'Personal flashcards saved directly from your live practice and coaching lab.',
+                'icon' => 'bookmark',
+                'color' => '#7c3aed',
+                'is_system' => true,
+            ]
+        );
+
+        $grammarTag = ! empty($this->explanations) ? $this->explanations[0]['tag'] : 'Grammar';
+        $explanationText = ! empty($this->explanations) ? $this->explanations[0]['text'] : null;
+
+        Flashcard::create([
+            'deck_id' => $deck->id,
+            'front' => 'Original: "'.$this->submission.'"',
+            'back' => $this->corrected,
+            'grammar_tag' => $grammarTag,
+            'explanation' => $explanationText,
+            'audio_text' => $this->corrected,
+            'interval_days' => 0,
+            'ease_factor' => 2.50,
+            'repetitions' => 0,
+            'lapses' => 0,
+            'due_at' => now(),
+        ]);
+
+        $this->savedToFlashcards = true;
+    }
 
     public function completeCorrection(): void
     {

@@ -2,10 +2,12 @@
 
 use App\Ai\Agents\LabCoachAgent;
 use App\Ai\Agents\TranslateAgent;
+use App\Models\Flashcard;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-uses(TestCase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function (): void {
     config(['ai.verbally.gemini_model' => 'gemini-test']);
@@ -75,4 +77,19 @@ it('clears lab history', function (): void {
         ->call('clearLab')
         ->assertCount('results', 0)
         ->assertSee('No coaching runs yet.');
+});
+
+it('saves a coaching result to the user flashcard deck', function (): void {
+    $component = Livewire::test('pages::lab')
+        ->set('text', 'Hey bro I need that report ASAP.')
+        ->set('command', 'formal')
+        ->call('runCommand')
+        ->assertSee('📌 Save to Deck')
+        ->call('saveResultToDeck', 1)
+        ->assertSee('✓ Saved to Deck');
+
+    $card = Flashcard::where('back', 'Coaching Result: Here is the revised professional text.')->first();
+    expect($card)->not->toBeNull()
+        ->and($card->grammar_tag)->toBe('Lab: Formal')
+        ->and($card->deck->slug)->toBe('my-corrections');
 });

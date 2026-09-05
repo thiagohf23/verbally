@@ -14,6 +14,9 @@
         <testsuite name="Livewire pages">
             <directory suffix=".test.php">resources/views/pages</directory>
         </testsuite>
+        <testsuite name="Livewire components">
+            <directory suffix=".test.php">resources/views/components</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>

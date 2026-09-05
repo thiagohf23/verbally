@@ -1,6 +1,8 @@
 <?php
 
 use App\Actions\GenerateLabCommand;
+use App\Models\Deck;
+use App\Models\Flashcard;
 use Livewire\Component;
 
 new class extends Component
@@ -68,7 +70,43 @@ new class extends Component
             'response' => $outcome['response'],
             'translation' => null,
             'translating' => false,
+            'saved' => false,
         ]);
+    }
+
+    public function saveResultToDeck(int $resultId): void
+    {
+        $index = array_find_key($this->results, fn (array $item): bool => $item['id'] === $resultId);
+        if ($index === null || ($this->results[$index]['saved'] ?? false)) {
+            return;
+        }
+
+        $deck = Deck::firstOrCreate(
+            ['slug' => 'my-corrections'],
+            [
+                'name' => 'My Corrections',
+                'description' => 'Personal flashcards saved directly from your live practice and coaching lab.',
+                'icon' => 'bookmark',
+                'color' => '#7c3aed',
+                'is_system' => true,
+            ]
+        );
+
+        Flashcard::create([
+            'deck_id' => $deck->id,
+            'front' => 'Original: "'.$this->results[$index]['text'].'"',
+            'back' => $this->results[$index]['response'],
+            'grammar_tag' => 'Lab: '.ucfirst($this->results[$index]['command']),
+            'explanation' => 'Saved from Coaching Lab ('.$this->results[$index]['label'].')',
+            'audio_text' => $this->results[$index]['response'],
+            'interval_days' => 0,
+            'ease_factor' => 2.50,
+            'repetitions' => 0,
+            'lapses' => 0,
+            'due_at' => now(),
+        ]);
+
+        $this->results[$index]['saved'] = true;
     }
 
     public function translateResult(int $resultId): void

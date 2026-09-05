@@ -48,7 +48,8 @@ final class GenerateFollowUp
         }
 
         try {
-            $response = retry(3, fn () => $agent->prompt(
+            $attempts = app()->environment('testing') ? 1 : 3;
+            $response = retry($attempts, fn () => $agent->prompt(
                 "Original text:\n{$submission}\n\nCorrected text:\n{$corrected}",
                 provider: 'gemini', model: $model, timeout: $timeout,
             ), 800);

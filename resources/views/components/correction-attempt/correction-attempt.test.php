@@ -5,11 +5,13 @@ use App\Ai\Agents\CorrectionTextAgent;
 use App\Ai\Agents\ExampleAgent;
 use App\Ai\Agents\NaturalRewriteAgent;
 use App\Ai\Agents\TranslateAgent;
+use App\Models\Flashcard;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-uses(TestCase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function (): void {
     config(['ai.verbally.gemini_model' => 'gemini-test']);
@@ -166,4 +168,18 @@ it('does not start a follow-up for an off-topic response', function (): void {
         ->assertSet('followUpPending', false)
         ->assertSet('followUps', [])
         ->assertDispatched('correction-attempt-finished', attemptId: 0, correctionCompleted: false);
+});
+
+it('saves a completed correction to the user flashcard deck', function (): void {
+    $component = correctionAttempt()
+        ->call('completeCorrection')
+        ->assertSee('📌 Save to Deck')
+        ->call('saveToDeck')
+        ->assertSet('savedToFlashcards', true)
+        ->assertSee('✓ Saved to Deck');
+
+    $card = Flashcard::where('back', 'I went home.')->first();
+    expect($card)->not->toBeNull()
+        ->and($card->grammar_tag)->toBe('Grammar')
+        ->and($card->deck->slug)->toBe('my-corrections');
 });

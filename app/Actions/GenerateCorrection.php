@@ -54,7 +54,8 @@ final class GenerateCorrection
             return ['details' => null, 'error' => 'Gemini is not configured. Try again later.'];
         }
         try {
-            $response = retry(3, fn () => CorrectionDetailsAgent::make()->prompt(
+            $attempts = app()->environment('testing') ? 1 : 3;
+            $response = retry($attempts, fn () => CorrectionDetailsAgent::make()->prompt(
                 "Original text:\n{$submission}\n\nPreviously streamed corrected text:\n{$corrected}",
                 provider: 'gemini', model: $model, timeout: $timeout,
             ), 800);

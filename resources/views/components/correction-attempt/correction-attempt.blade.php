@@ -22,6 +22,8 @@
                 :retry-action="'$wire.$parent.retryAttempt('.$attemptId.', \''.($errorStage ?? 'stream').'\')'"
                 :follow-up-retry-action="'$wire.$parent.startFollowUp('.$attemptId.', \''.($followUpKind ?? 'rewrite').'\')'"
                 :translate-action="'$wire.$parent.startFollowUp('.$attemptId.', \'translate\')'"
+                :save-action="'$wire.saveToDeck()'"
+                :saved="$savedToFlashcards"
                 :rewrite-action="'$wire.$parent.startFollowUp('.$attemptId.', \'rewrite\')'"
                 :examples-action="'$wire.$parent.startFollowUp('.$attemptId.', \'example\')'"
             />

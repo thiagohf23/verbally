@@ -10,6 +10,7 @@
             <nav class="flex items-center gap-1" aria-label="Sections">
                 <a href="{{ url('/') }}" class="rounded-lg px-2.5 py-1 text-xs font-medium text-[#5c6357] transition-colors hover:bg-[#edf6ef] dark:text-[#a3b8aa] dark:hover:bg-[#1b2b21]">Practice</a>
                 <a href="{{ url('/lab') }}" class="rounded-lg bg-[#2f7a55] px-2.5 py-1 text-xs font-semibold text-white transition-colors dark:bg-[#235c40]" aria-current="page">Coaching Lab</a>
+                <a href="{{ url('/review') }}" class="rounded-lg px-2.5 py-1 text-xs font-medium text-[#5c6357] transition-colors hover:bg-[#edf6ef] dark:text-[#a3b8aa] dark:hover:bg-[#1b2b21]">Flashcards</a>
             </nav>
         </div>
         <div class="verbally-nav-meta">
@@ -219,6 +220,15 @@
                                     {{ $result['translating'] ? 'Traduzindo…' : 'Translate (PT)' }}
                                 </button>
                             @endif
+
+                            <button
+                                type="button"
+                                wire:click="saveResultToDeck({{ $result['id'] }})"
+                                @disabled($result['saved'] ?? false)
+                                class="rounded-lg border border-[#e2e5dd] bg-[#fbfcfa] px-3 py-1.5 text-xs font-medium text-[#5c6357] transition-colors hover:bg-white hover:text-[#17352a] disabled:opacity-50 dark:border-[#273d2f] dark:bg-[#15221b] dark:text-[#cbdad0] dark:hover:bg-[#1c2c23] dark:hover:text-[#ecf4ee]"
+                            >
+                                {{ ($result['saved'] ?? false) ? '✓ Saved to Deck' : '📌 Save to Deck' }}
+                            </button>
 
                             <button
                                 type="button"
