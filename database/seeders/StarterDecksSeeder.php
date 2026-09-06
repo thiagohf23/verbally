@@ -206,5 +206,61 @@ class StarterDecksSeeder extends Seeder
                 ])
             );
         }
+
+        // 5. Real Conversations & Dating
+        $conversations = Deck::firstOrCreate(
+            ['slug' => 'real-conversations'],
+            [
+                'name' => 'Real Conversations & Dating',
+                'description' => 'Smooth, natural conversational lines, icebreakers, and charming phrases for dates and social hangouts.',
+                'icon' => 'chat',
+                'color' => '#ec4899',
+                'is_system' => true,
+            ]
+        );
+
+        $convoCards = [
+            [
+                'front' => 'Elogio charmoso no primeiro encontro: "Você está linda esta noite, a propósito."',
+                'back' => 'You look stunning tonight, by the way.',
+                'grammar_tag' => 'First Date & Social',
+                'explanation' => "Adding 'by the way' makes compliments sound effortless, spontaneous, and charming.",
+                'audio_text' => 'You look stunning tonight, by the way.',
+            ],
+            [
+                'front' => 'Quebrando o gelo calorosamente: "Fico muito feliz que finalmente nos encontramos pessoalmente."',
+                'back' => "I'm really glad we finally got to meet up in person.",
+                'grammar_tag' => 'First Date & Social',
+                'explanation' => "Use 'meet up in person' rather than literal 'meet personally'.",
+                'audio_text' => "I'm really glad we finally got to meet up in person.",
+            ],
+            [
+                'front' => 'Puxando assunto sobre paixões: "Então, o que você mais gosta de fazer quando não está trabalhando?"',
+                'back' => "So, what do you love doing when you're not working?",
+                'grammar_tag' => 'First Date & Social',
+                'explanation' => "Asking 'when you're not working' is much more natural and engaging than 'what are your hobbies?'.",
+                'audio_text' => "So, what do you love doing when you're not working?",
+            ],
+            [
+                'front' => 'Reagindo com entusiasmo a uma história divertida: "Mentira! Sério? Como você foi parar nisso?"',
+                'back' => 'No way! Really? How did you get into that?',
+                'grammar_tag' => 'Conversational Reactions',
+                'explanation' => "'No way!' expresses friendly surprise, and 'how did you get into that?' asks for their story.',",
+                'audio_text' => 'No way! Really? How did you get into that?',
+            ],
+        ];
+
+        foreach ($convoCards as $card) {
+            Flashcard::firstOrCreate(
+                ['deck_id' => $conversations->id, 'front' => $card['front']],
+                array_merge($card, [
+                    'due_at' => now(),
+                    'interval_days' => 0,
+                    'ease_factor' => 2.50,
+                    'repetitions' => 0,
+                    'lapses' => 0,
+                ])
+            );
+        }
     }
 }

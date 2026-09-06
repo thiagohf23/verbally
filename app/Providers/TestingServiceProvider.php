@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Ai\Agents\ConversationTurnAgent;
 use App\Ai\Agents\CorrectionDetailsAgent;
 use App\Ai\Agents\CorrectionTextAgent;
 use App\Ai\Agents\ExampleAgent;
@@ -39,6 +40,7 @@ final class TestingServiceProvider extends ServiceProvider
         ExampleAgent::fake($this->example(...));
         TranslateAgent::fake($this->translate(...));
         LabCoachAgent::fake($this->labCoach(...));
+        ConversationTurnAgent::fake($this->conversationTurn(...));
     }
 
     private function correctionText(string $submission): string
@@ -133,6 +135,17 @@ final class TestingServiceProvider extends ServiceProvider
     private function labCoach(string $prompt): string
     {
         return "Coaching Result:\nRevised text formatted by the coach.\n\nTip: Consistent verb forms improve clarity.";
+    }
+
+    private function conversationTurn(string $prompt): string
+    {
+        return json_encode([
+            'reply' => "Aww, thank you! I'm really glad we met up tonight. What kind of food or drinks do you usually love?",
+            'native_alternative' => 'I come here all the time, and you look lovely tonight by the way.',
+            'smooth_variation' => "I'm a regular here! The espresso is fantastic—and you look stunning, by the way.",
+            'coaching_tip' => "Adding 'by the way' before a compliment makes it sound spontaneous and confident.",
+            'key_vocabulary' => ['regular', 'by the way', 'meet up'],
+        ], JSON_THROW_ON_ERROR);
     }
 
     /** @return array{string, string} */
