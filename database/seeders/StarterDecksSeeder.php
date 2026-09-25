@@ -208,11 +208,11 @@ class StarterDecksSeeder extends Seeder
         }
 
         // 5. Real Conversations & Dating
-        $conversations = Deck::firstOrCreate(
+        $conversations = Deck::updateOrCreate(
             ['slug' => 'real-conversations'],
             [
-                'name' => 'Real Conversations & Dating',
-                'description' => 'Smooth, natural conversational lines, icebreakers, and charming phrases for dates and social hangouts.',
+                'name' => 'Real Conversations',
+                'description' => 'Natural phrases collected from conversations, work, travel, and social practice.',
                 'icon' => 'chat',
                 'color' => '#ec4899',
                 'is_system' => true,

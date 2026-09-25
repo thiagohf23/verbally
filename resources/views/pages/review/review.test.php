@@ -9,6 +9,20 @@ use Tests\TestCase;
 
 uses(TestCase::class, RefreshDatabase::class);
 
+it('supports audio-first review mode from the daily routine', function (): void {
+    $deck = Deck::factory()->create();
+    Flashcard::factory()->create([
+        'deck_id' => $deck->id,
+        'due_at' => now(),
+        'audio_text' => 'How are you doing?',
+    ]);
+
+    $this->get('/review?mode=audio')
+        ->assertSuccessful()
+        ->assertSee('Listen before reading')
+        ->assertSee('Play phrase');
+});
+
 beforeEach(function () {
     $this->deck = Deck::factory()->create([
         'name' => 'General Practice',

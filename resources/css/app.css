@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+[x-cloak] {
+    display: none !important;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -121,3 +125,42 @@ button:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px sol
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 @media (max-width: 850px) { .verbally-main { grid-template-columns: 1fr; padding-left: var(--verbally-gutter); padding-right: var(--verbally-gutter); padding-top: 30px; width: auto; } .verbally-editor { max-width: none; padding: 0 24px; } .verbally-conversation { min-height: 500px; } }
 @media (max-width: 560px) { :root { --verbally-gutter: 20px; } .verbally-nav { padding: 18px var(--verbally-gutter); } .verbally-nav-meta { gap: 12px; } .verbally-logo-wrap { height: 53px; width: 206px; } .verbally-logo-wrap img { top: -66px; width: 224px; } .verbally-session { display: none; } .verbally-main { gap: 32px; grid-template-columns: 1fr; padding: 28px var(--verbally-gutter) 48px; width: auto; } .verbally-editor { padding-left: 0; padding-right: 0; } .verbally-editor h1 { font-size: 42px; } .verbally-lede { margin-bottom: 24px; } .verbally-conversation-head, .verbally-conversation-scroll { padding-left: 18px; padding-right: 18px; } .verbally-hint { display: none; } }
+
+@media (max-width: 850px) {
+    .verbally-nav {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px var(--verbally-gutter);
+    }
+
+    .verbally-nav > div:first-child {
+        gap: 0;
+        max-width: calc(100vw - 68px);
+        min-width: 0;
+    }
+
+    .verbally-brand {
+        display: none;
+    }
+
+    .verbally-nav nav {
+        max-width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+        white-space: nowrap;
+    }
+
+    .verbally-nav nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .verbally-nav-meta {
+        gap: 8px;
+        margin-left: auto;
+    }
+
+    .verbally-learning-nav .verbally-clear,
+    .verbally-nav-meta .verbally-session {
+        display: none;
+    }
+}

@@ -17,6 +17,8 @@ new class extends Component
 
     public bool $isFlipped = false;
 
+    public bool $audioFirst = false;
+
     public string $mode = 'due'; // 'due' or 'all'
 
     public ?string $filterTag = null;
@@ -38,7 +40,14 @@ new class extends Component
 
     public function mount(): void
     {
+        $this->audioFirst = request()->string('mode')->value() === 'audio';
         $this->loadNextCard();
+    }
+
+    public function setPromptMode(string $mode): void
+    {
+        $this->audioFirst = $mode === 'audio';
+        $this->isFlipped = false;
     }
 
     public function loadNextCard(): void

@@ -1,14 +1,21 @@
 # Verbally
 
-Verbally é uma aplicação Laravel para correção de inglês com apoio de IA. A
-interface principal fica na página inicial e permite enviar um texto, receber a
-correção em streaming, ver detalhes estruturados da revisão e pedir
-seguimentos como reescrita natural ou um exemplo curto.
+Verbally é um treinador pessoal de compreensão oral, conversação e escrita em
+inglês com apoio de IA. O fluxo principal prioriza ouvir antes de ler, responder
+por voz e receber feedback curto depois de manter uma conversa real.
 
 ## Funcionalidades
 
 - Correção de texto em inglês com streaming.
 - Exibição de detalhes da correção com diff estruturado.
+- Rotina diária guiada de aproximadamente 12 minutos.
+- Diálogos curtos de listening com transcrição opcional e compreensão.
+- Conversas por cenário com áudio antes do texto.
+- Resposta por microfone com transcrição e análise da gravação pelo Gemini.
+- Feedback de pronúncia com sons IPA e orientação de língua, lábios e fluxo de ar.
+- Modos de fluência (feedback no fim) e estudo (feedback por turno).
+- Controle de velocidade, shadowing e histórico de sessões.
+- Flashcards áudio-first com repetição espaçada.
 - Ações de acompanhamento:
   - reescrita natural;
   - exemplo curto relacionado à correção.
@@ -76,14 +83,27 @@ da interface.
 ## Estrutura relevante
 
 - `routes/web.php`: rota principal da aplicação.
+- `resources/views/pages/today/`: rotina diária e progresso recente.
+- `resources/views/pages/listen/`: prática de compreensão com diálogos.
+- `resources/views/pages/conversations/`: conversa por voz e feedback de pronúncia.
 - `app/Actions/GenerateCorrection.php`: gera a correção em streaming e valida
   os detalhes estruturados.
+- `app/Actions/AnalyzePronunciation.php`: envia áudio temporário ao Gemini e
+  normaliza o feedback articulatório.
+- `app/Actions/GenerateSessionFeedback.php`: produz o resumo final da conversa.
 - `app/Actions/GenerateFollowUp.php`: gera os seguimentos de reescrita e exemplo.
 - `app/Ai/`: agentes, prompts e runtime de IA.
 - `resources/views/pages/index/`: página principal Livewire da aplicação.
 - `resources/views/components/`: componentes reutilizáveis da interface.
 - `tests/Feature/`: testes das ações e da rota.
 - `tests/Browser/`: fluxo end-to-end da interface.
+
+## Privacidade das gravações
+
+As gravações do microfone usam o upload temporário do Livewire, são analisadas
+durante a requisição e não são adicionadas ao histórico da aplicação. O banco
+guarda somente transcrição, métricas e feedback. O Livewire remove uploads
+temporários expirados automaticamente.
 
 ## Licença
 

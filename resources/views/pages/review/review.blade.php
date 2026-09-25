@@ -3,7 +3,7 @@
     speak(text) {
         if (!text) return;
         this.isSpeaking = true;
-        window.verballySpeak(text, () => { this.isSpeaking = true; }, () => { this.isSpeaking = false; });
+        window.verballySpeak(text, () => { this.isSpeaking = true; }, () => { this.isSpeaking = false; }, { rate: Number(localStorage.getItem('verbally_playback_rate') || 0.9) });
     }
 }" @keydown.window="
     if ($event.target.tagName !== 'INPUT' && $event.target.tagName !== 'TEXTAREA') {
@@ -18,42 +18,13 @@
     }
 ">
     @island(name: 'header', always: true)
-        <header class="verbally-nav" aria-label="Primary navigation">
-            <div class="flex items-center gap-3 sm:gap-6">
-                <a href="{{ url('/') }}" class="verbally-brand" aria-label="Verbally home">
-                    <span class="verbally-logo-wrap">
-                        <img src="{{ asset('images/verbally-logo-lockup.png') }}" class="dark:hidden" alt="Verbally, English corrections and coaching" width="207" height="178">
-                        <img src="{{ asset('images/verbally-logo-lockup-dark.png') }}" class="hidden dark:block" alt="Verbally, English corrections and coaching" width="207" height="178">
-                    </span>
-                </a>
-                <nav class="flex items-center gap-1" aria-label="Sections">
-                    <a href="{{ url('/') }}" class="rounded-lg px-2.5 py-1 text-xs font-medium text-[#5c6357] transition-colors hover:bg-[#edf6ef] dark:text-[#a3b8aa] dark:hover:bg-[#1b2b21]">Practice</a>
-                    <a href="{{ url('/lab') }}" class="rounded-lg px-2.5 py-1 text-xs font-medium text-[#5c6357] transition-colors hover:bg-[#edf6ef] dark:text-[#a3b8aa] dark:hover:bg-[#1b2b21]">Coaching Lab</a>
-                    <a href="{{ url('/review') }}" class="rounded-lg bg-[#2f7a55] px-2.5 py-1 text-xs font-semibold text-white transition-colors dark:bg-[#235c40]" aria-current="page">Flashcards</a>
-                    <a href="{{ url('/conversations') }}" class="rounded-lg px-2.5 py-1 text-xs font-medium text-[#5c6357] transition-colors hover:bg-[#edf6ef] dark:text-[#a3b8aa] dark:hover:bg-[#1b2b21]">Conversations</a>
-                </nav>
-            </div>
-            <div class="verbally-nav-meta">
-                <span class="verbally-session">🔥 {{ $this->dailyStreak }}d streak · {{ $this->totalDueCount }} due</span>
-                <button
-                    type="button"
-                    x-on:click="window.toggleVerballyTheme ? window.toggleVerballyTheme() : document.documentElement.classList.toggle('dark')"
-                    class="verbally-theme-toggle"
-                    aria-label="Toggle dark mode"
-                    title="Toggle dark mode"
-                >
-                    <svg class="block size-4 dark:hidden" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
-                    </svg>
-                    <svg class="hidden size-4 dark:block" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-                    </svg>
-                </button>
-                <button type="button" wire:click="openAddModal" class="verbally-clear" aria-label="Add new flashcard">
-                    + New Card
-                </button>
-            </div>
-        </header>
+        <x-nav active="review" class="verbally-learning-nav">
+            <span class="verbally-session">🔥 {{ $this->dailyStreak }}d streak · {{ $this->totalDueCount }} due</span>
+            <x-theme-toggle />
+            <button type="button" wire:click="openAddModal" class="verbally-clear" aria-label="Add new flashcard">
+                + New Card
+            </button>
+        </x-nav>
     @endisland
 
     <!-- Full-Width Main Workspace Container -->
@@ -180,6 +151,13 @@
                             </button>
                         </div>
                     </div>
+                    <div class="mt-3 border-t border-[#edf1ea] pt-3.5 dark:border-[#223528]">
+                        <div class="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[#828c7d] dark:text-[#7f9888]">Prompt style</div>
+                        <div class="grid grid-cols-2 gap-1.5 rounded-xl bg-[#f4f7f2] p-1 dark:bg-[#101b14]">
+                            <button type="button" wire:click="setPromptMode('audio')" class="rounded-lg py-1.5 text-xs font-semibold {{ $audioFirst ? 'bg-white text-[#1a2e22] shadow-xs dark:bg-[#1d3023] dark:text-[#ecf4ee]' : 'text-[#636c5f] dark:text-[#8ba393]' }}">🎧 Audio first</button>
+                            <button type="button" wire:click="setPromptMode('classic')" class="rounded-lg py-1.5 text-xs font-semibold {{ ! $audioFirst ? 'bg-white text-[#1a2e22] shadow-xs dark:bg-[#1d3023] dark:text-[#ecf4ee]' : 'text-[#636c5f] dark:text-[#8ba393]' }}">Text prompt</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Grammar Weakness Radar -->
@@ -236,12 +214,17 @@
 
                             <!-- Card Stimulus / Prompt Front -->
                             <div class="mt-8">
-                                <div class="mb-3 text-xs font-bold uppercase tracking-wider text-[#8e988a] dark:text-[#7a9283]">
-                                    Prompt / Em Português:
-                                </div>
-                                <div class="font-display text-2xl sm:text-3xl lg:text-4xl font-medium leading-snug text-[#172c21] dark:text-[#ecf4ee]">
-                                    {{ $this->currentCard->front }}
-                                </div>
+                                @if ($audioFirst && ! $isFlipped)
+                                    <div class="flex flex-col items-center rounded-3xl bg-[#17352a] px-6 py-10 text-center text-white dark:bg-[#0c1710]">
+                                        <span class="flex size-16 items-center justify-center rounded-full bg-white/10 text-3xl">🎧</span>
+                                        <div class="mt-4 text-xs font-bold uppercase tracking-[.14em] text-[#72d19b]">Listen before reading</div>
+                                        <p class="mt-2 max-w-md text-sm text-white/65">Say the phrase aloud or explain what you understood, then reveal the answer.</p>
+                                        <button type="button" @click="speak('{{ addslashes($this->currentCard->audio_text ?? $this->currentCard->back) }}')" class="mt-5 rounded-xl bg-[#65cc91] px-5 py-3 text-sm font-bold text-[#113421]">🔊 Play phrase</button>
+                                    </div>
+                                @else
+                                    <div class="mb-3 text-xs font-bold uppercase tracking-wider text-[#8e988a] dark:text-[#7a9283]">Prompt / Em Português:</div>
+                                    <div class="font-display text-2xl font-medium leading-snug text-[#172c21] sm:text-3xl lg:text-4xl dark:text-[#ecf4ee]">{{ $this->currentCard->front }}</div>
+                                @endif
                             </div>
 
                             <!-- Card Back Revelation (when flipped) -->
